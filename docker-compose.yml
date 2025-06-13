@@ -12,10 +12,10 @@ services:
     # tmpfs:
     #   - /app/.tmp:mode=770,uid=1000,gid=1000
     ports:
-      - 3000:1337
+      - ${PLANKA_PORT:-4000}:1337
     environment:
-      - BASE_URL=http://localhost:3000
-      - DATABASE_URL=postgresql://postgres@postgres/planka
+      - BASE_URL=http://localhost:${PLANKA_PORT:-4000}
+      - DATABASE_URL=${PLANKA_DATABASE_URL}
 
       # Optionally store the database password in secrets:
       # - DATABASE_URL=postgresql://postgres:$${DATABASE_PASSWORD}@postgres/planka
@@ -24,7 +24,7 @@ services:
       # secrets:
       #   - database_password
 
-      - SECRET_KEY=notsecretkey
+      - SECRET_KEY=${PLANKA_SECRET_KEY:notsecretkey}
       # Optionally store in secrets - then SECRET_KEY should not be set
       # - SECRET_KEY__FILE=/run/secrets/secret_key
 
@@ -45,13 +45,12 @@ services:
       # - DEFAULT_LANGUAGE=en-US
 
       # Do not comment out DEFAULT_ADMIN_EMAIL if you want to prevent this user from being edited/deleted
-      # - DEFAULT_ADMIN_EMAIL=demo@demo.demo
-      # - DEFAULT_ADMIN_PASSWORD=demo
+      - DEFAULT_ADMIN_EMAIL=${DEFAULT_ADMIN_EMAIL:demo@demo.demo}
+      - DEFAULT_ADMIN_PASSWORD=${DEFAULT_ADMIN_PASSWORD:demo}
       # Optionally store in secrets - then DEFAULT_ADMIN_PASSWORD should not be set
       # - DEFAULT_ADMIN_PASSWORD__FILE=/run/secrets/default_admin_password
-      # - DEFAULT_ADMIN_NAME=Demo Demo
-      # - DEFAULT_ADMIN_USERNAME=demo
-
+      - DEFAULT_ADMIN_NAME=${DEFAULT_ADMIN_NAME:Demo Demo}
+      - DEFAULT_ADMIN_USERNAME=${DEFAULT_ADMIN_USERNAME:demo}
       # - ACTIVE_USERS_LIMIT=
 
       # Set to true to show more detailed authentication error messages.
@@ -116,11 +115,13 @@ services:
     restart: on-failure
     volumes:
       - db-data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
     environment:
       - POSTGRES_DB=planka
       - POSTGRES_HOST_AUTH_METHOD=trust
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d planka"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d planka" ]
       interval: 10s
       timeout: 5s
       retries: 5
