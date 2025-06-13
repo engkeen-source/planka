@@ -16,6 +16,7 @@ services:
     environment:
       - BASE_URL=${PLANKA_BASE_URL}
       - DATABASE_URL=${PLANKA_DATABASE_URL}
+      - ONLY_ALLOW_ORIGINS=${PLANKA_BASE_URL}
 
       # Optionally store the database password in secrets:
       # - DATABASE_URL=postgresql://postgres:$${DATABASE_PASSWORD}@postgres/planka
