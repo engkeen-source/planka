@@ -16,7 +16,7 @@ services:
     environment:
       - BASE_URL=${PLANKA_BASE_URL}
       - DATABASE_URL=${PLANKA_DATABASE_URL}
-      - ONLY_ALLOW_ORIGINS=${PLANKA_BASE_URL}
+      # - ONLY_ALLOW_ORIGINS=http://localhost:4000,http://localhost:3001,http://localhost
 
       # Optionally store the database password in secrets:
       # - DATABASE_URL=postgresql://postgres:$${DATABASE_PASSWORD}@postgres/planka
@@ -110,6 +110,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - shared-network
 
   postgres:
     image: postgres:16-alpine
@@ -126,6 +128,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - shared-network
 
 volumes:
   favicons:
@@ -133,3 +137,9 @@ volumes:
   background-images:
   attachments:
   db-data:
+
+
+networks:
+  shared-network:
+    name: planka-network
+    driver: bridge
